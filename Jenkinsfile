@@ -29,7 +29,7 @@ node {
     analyze: {
       def imagesLine = "docker.io/wazowskis/foo:${BUILD_NUMBER} " + dockerfile
       writeFile file: anchorefile, text: imagesLine
-      anchore name: anchorefile, bailOnFail: false, bundleId: '2c53a13c-1765-11e8-82ef-23527761d060', engineRetries: '1000'
+      anchore name: anchorefile, bailOnFail: false
     }
   }
 
