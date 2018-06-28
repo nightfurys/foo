@@ -23,7 +23,7 @@ node {
   stage('Parallel Test and Analyze') {
     parallel test: {
       app.inside {
-          sh 'echo "Tests passed"'
+          sh 'echo "Dummy - tests passed"'
       }
     },
     analyze: {
