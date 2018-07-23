@@ -14,22 +14,21 @@ node {
 
   stage('Build') {
     // Build the image and push it to a staging repository
-    docker.withRegistry("https://index.docker.io/v1/", "dockerhub-wazowskis") {
-      app = docker.build("wazowskis/foo:${BUILD_NUMBER}")
+    docker.withRegistry("${DOCKER_REGISTRY_URL}", "docker-credentials") {
+      app = docker.build("${DOCKER_REPOSITORY}:${BUILD_NUMBER}")
       app.push()
     }
   }
 
-  stage('Parallel Test and Analyze') {
-    parallel test: {
+  stage('Parallel') {
+    parallel Test: {
       app.inside {
           sh 'echo "Dummy - tests passed"'
       }
     },
-    analyze: {
-      def imagesLine = "docker.io/wazowskis/foo:${BUILD_NUMBER} " + dockerfile
-      writeFile file: anchorefile, text: imagesLine
-      anchore name: anchorefile, bailOnFail: false
+    Anchore: {
+      writeFile file: anchorefile, text: "${DOCKER_REGISTRY_HOSTNAME}/${DOCKER_REPOSITORY}:${BUILD_NUMBER} " + dockerfile
+      anchore annotations: [[key: 'added-by', value: 'jenkins']], name: 'anchore_images'
     }
   }
 
