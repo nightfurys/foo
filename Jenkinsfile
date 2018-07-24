@@ -27,7 +27,9 @@ node {
       checkout scm
       def path = sh returnStdout: true, script: "pwd"
       path = path.trim()
+      echo "pwd: ${path}"
       dockerfile = path + "/Dockerfile"
+      echo "Dockerfile path: ${dockerfile}"
     }
 
     stage('Build') {
@@ -47,8 +49,9 @@ node {
       },
       Analyze: {
         anchorefile = path + "/anchore_images"
+        echo "Anchore images file path: ${anchorefile}"
         writeFile file: anchorefile, text: inputConfig['dockerRegistryHostname'] + "/" + repotag + " " + dockerfile
-        anchore name: anchorefile, engineurl: inputConfig['anchoreEngineUrl'], engineCredentialsId: inputConfig['anchoreEngineCredentials'], annotations: [[key: 'added-by', value: 'jenkins']] 
+        anchore name: anchorefile, engineurl: inputConfig['anchoreEngineUrl'], engineCredentialsId: inputConfig['anchoreEngineCredentials'], annotations: [[key: 'added-by', value: 'jenkins']]
       }
     }
   } finally {
