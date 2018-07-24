@@ -1,10 +1,10 @@
 node {
-  try {
-    def app
-    def dockerfile
-    def anchorefile
-    def repotag
+  def app
+  def dockerfile
+  def anchorefile
+  def repotag
 
+  try {
     stage('Checkout') {
       // Clone the git repository
       checkout scm
@@ -23,13 +23,13 @@ node {
       }
     }
 
-    stage('Parallel') {
+    stage('') {
       parallel Test: {
         app.inside {
             sh 'echo "Dummy - tests passed"'
         }
       },
-      Anchore: {
+      Analyze: {
         writeFile file: anchorefile, text: "${DOCKER_REGISTRY_HOSTNAME}/${DOCKER_REPOSITORY}:${BUILD_NUMBER} " + dockerfile
         anchore annotations: [[key: 'added-by', value: 'jenkins']], name: 'anchore_images'
       }
