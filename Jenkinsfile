@@ -23,7 +23,7 @@ node {
       }
     }
 
-    stage('') {
+    stage('Parallel') {
       parallel Test: {
         app.inside {
             sh 'echo "Dummy - tests passed"'
