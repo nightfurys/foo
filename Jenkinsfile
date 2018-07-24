@@ -37,7 +37,7 @@ node {
   } finally {
     stage('Cleanup') {
       // Delete the docker image and clean up any allotted resources
-      sh script: "for i in `cat " + anchorefile + " | grep \"" + repotag + "\" | awk '{print \$1}'`;do docker rmi \$i; done"
+      sh script: "docker rmi " + repotag
     }
   }
 }
