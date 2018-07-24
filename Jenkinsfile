@@ -3,6 +3,7 @@ node {
     def app
     def dockerfile
     def anchorefile
+    def repotag
 
     stage('Checkout') {
       // Clone the git repository
@@ -11,17 +12,18 @@ node {
       path = path.trim()
       dockerfile = path + "/Dockerfile"
       anchorefile = path + "/anchore_images"
+      repotag = "${DOCKER_REPOSITORY}:${BUILD_NUMBER}"
     }
 
     stage('Build') {
       // Build the image and push it to a staging repository
       docker.withRegistry("${DOCKER_REGISTRY_URL}", "docker-credentials") {
-        app = docker.build("${DOCKER_REPOSITORY}:${BUILD_NUMBER}")
+        app = docker.build(repotag)
         app.push()
       }
     }
 
-    stage('Parallel') {
+    stage() {
       parallel Test: {
         app.inside {
             sh 'echo "Dummy - tests passed"'
@@ -35,9 +37,7 @@ node {
   } finally {
     stage('Cleanup') {
       // Delete the docker image and clean up any allotted resources
-      sh'''
-        for i in `cat anchore_images | grep foo | awk '{print $1}'`;do docker rmi $i; done
-      '''
+      sh script: "for i in `cat " + anchorefile + " | grep \" + repotag + \" | awk '{print \$1}'`;do docker rmi \$i; done"
     }
   }
 }
