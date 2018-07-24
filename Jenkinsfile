@@ -27,11 +27,8 @@ node {
       checkout scm
       def path = sh returnStdout: true, script: "pwd"
       path = path.trim()
-      echo "pwd: ${path}"
       dockerfile = path + "/Dockerfile"
-      echo "Dockerfile path: ${dockerfile}"
       anchorefile = path + "/anchore_images"
-      echo "Anchore images file path: ${anchorefile}"
     }
 
     stage('Build') {
